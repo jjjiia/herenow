@@ -45,14 +45,15 @@ function getCensusId(url,type,callBack){
 //mobility B07003
 //realestate B25075
 var t1 = "B01003,B01002,B25002,B02001,B25003,B07201,B15003"
-var t2 = ",B08301,B25035,B08302,B25041,B08303,B25061"
-var t3 = ",B25064,B15012,B25065,B16002,B25069,B16004,B25081,B19001,B27010,B19013,B99071,B19053"
-var t4 = ",B99233,B19055,C15010,B19057,C24030"
-var t5 = ",B19059,B23025"
+var t2 = ",B08301,B08302,B08303"
+var t3 = ",B25064,B15012,B16002,B16004,B25081,B19001,B27010,B19013"
+var t4 = ",C15010,B19057,C24030"
+var t5 = ",B23025"
 
-var saveForLater = "B24080,B25004,B25006,B25034,B08134,"
+var saveForLater = "B19055,B24080,B25004,B25006,B25034,B08134,B25035,B25041,B25065,B25069,B19053,B19059,B25061"
 
-allTables = t1+t2//+t3+t4+t5
+allTables = t1+t2+t3+t4+t5
+console.log("showing this many tables: "+allTables.split(",").length)
 var returnedData = null
 function formatCensusIds(json){
     var blockGroupid = "15000US"+json.Block.FIPS.slice(0,12)
@@ -124,12 +125,14 @@ function formatDataSingle(data){
             var columnCode = columns[c]
             var columnName = table["columns"][columnCode].name
             var columnValue = geoData[tableCode].estimate[columnCode]
+            //&& columnValue!=0
             if(columnValue!=undefined && columnValue!=0){
-                if(columnCode.substr(columnCode.length -1)!="1"){
-                    var totalCode = columnCode.substr(0, columnCode.length -1)+"1"
+                if(columnCode.substr(columnCode.length -3)!="001"){
+                    var totalCode = columnCode.substr(0, columnCode.length -3)+"001"
+                    console.log([columnCode,totalCode])
                     var totalValue = geoData[tableCode].estimate[totalCode]
                     var percent = Math.round(columnValue/totalValue*100)
-//                    console.log(percent)
+                    console.log("percent: "+percent+" column value: "+columnValue+" totalValue: "+totalValue)
                     formattedData[tableCode]["columns"][columnCode]={"title":columnName,"value":columnValue,"percent":percent}   
                 }else{
                     formattedData[tableCode]["columns"][columnCode]={"title":columnName,"value":columnValue}   

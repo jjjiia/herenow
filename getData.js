@@ -73,8 +73,7 @@ var paragraph = "<strong>You are at </strong> a place where the median age is "
 +formatPercents(getPercentSum(["B27010017","B27010033","B27010050","B27010066"]))+" have no insurance coverage. "
 + "The median household income is "+ formatMoney(getValue("B19013001"))+", and "
 + formatPercents(getPercentSum(["B19001014","B19001015","B19001016","B19001017"]))+" of households make more than $100,000."
-+"<i><br/><br/>todo next:<br/>"
-+"Your phone is pointed in the direction of __degrees N, and the changes in front of you are ...<i>"
+
 d3.select("#paragraph").html(paragraph)
 }
 var colors = ["#de4645","#4dbb31","#ea4a73","#45b865","#e64821","#87b733","#b3324f","#5b821d","#a5361a","#b1a930","#d77231","#d1902e"]
@@ -116,28 +115,35 @@ function getTitle(code){
     var codeTitle = returnedData.tables[table].columns[code].name
     return codeTitle
 }
-function getTopRanked(tableCode,ranks){
-    
+function getTableData(tableCode){
     var list = []
     var codes = Object.keys(returnedData.data[Object.keys(returnedData.data)][tableCode].estimate)
     var totalCode = tableCode+"001"
     var tableCodeIndex = codes.indexOf(totalCode)
     codes.splice(tableCodeIndex,1)
-    console.log(codes)
     for(var c in codes){
         var code = codes[c]
         var codeValue = returnedData.data[Object.keys(returnedData.data)][tableCode].estimate[code]
-        list.push([code,codeValue])
+        if(codeValue>0){
+            list.push([code,codeValue])
+        }
     }
-    
     var sorted = list.sort(function(a,b){
         return b[1]-a[1];
     });
+    return sorted
+}
+
+function getTopRanked(tableCode,ranks){
+    
+   var sorted = getTableData(tableCode)
+    
+    
     var tops = sorted.slice(0,ranks)
     
     var s =""
     for(var t in tops){
-        console.log(t)
+       // console.log(t)
         var code = tops[t][0]
         var codeValue = Math.round(getPercent(code))
         var codeTitle = getTitle(code)
@@ -167,7 +173,7 @@ function formatCensusIds(json){
 
 function getCensusData(geoid,tableCode){
     var censusReporter = "https://api.censusreporter.org/1.0/data/show/latest?table_ids="+tableCode+"&geo_ids="+geoid
-    console.log(censusReporter)
+//    console.log(censusReporter)
     $.getJSON( censusReporter, function( data ) {
         formatCensusData(data)
     });
@@ -204,6 +210,7 @@ function formatCensusData(data){
     var formattedData = formatDataSingle(data)
        displayDataText(formattedData)
     makeParagraph()
+    makeCharts()
 }
 function formatDataSingle(data){
     var geoid = Object.keys(data.data)

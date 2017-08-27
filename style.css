@@ -22,10 +22,10 @@ body{
     font-size:30px;
 }
 .barLabel{
-    font-size:10px;
+    font-size:12px;
 }
 .axis text {
-  font: 10px sans-serif;
+  font: 12px sans-serif;
 }
 
 .axis line,
@@ -37,4 +37,6 @@ body{
 .barChart{
     border-bottom:1px solid black;
     padding:10px;
+    font-size:36px;
+    font-decoration:bold;
 }

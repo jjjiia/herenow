@@ -49,7 +49,8 @@ function wrap(text, width) {
 }
 function makeBarChart(tableCode){
     var data = getTableData(tableCode)
-    var chartDiv = d3.select("#charts").append("div").html(getTableName(tableCode)+"</br/>").attr("id",tableCode).attr("class","barChart")
+    var chartDiv = d3.select("#charts").append("div").html(getTableName(tableCode)+"</br/>").attr("id",tableCode)
+    .attr("class","barChart")
     
     var max = getPercent(data[0][0])
     
@@ -63,10 +64,10 @@ function makeBarChart(tableCode){
         keys.push(key)
     }
     
-    var margin = {left:100,top:0}
-    var barWidth = 40
+    var margin = {left:150,top:0}
+    var barWidth = 90
     var height = barWidth*data.length
-    var width = 150+margin.left
+    var width = 450+margin.left
     
     var xScale = d3.scale.linear().domain([0,max]).range([10,width-margin.left])
     var yScale = d3.scale.ordinal().domain(keys)    .rangeRoundBands([0, height-10],0);

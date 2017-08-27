@@ -21,3 +21,20 @@ body{
 #paragraph{
     font-size:30px;
 }
+.barLabel{
+    font-size:10px;
+}
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: none;
+  shape-rendering: crispEdges;
+}
+.barChart{
+    border-bottom:1px solid black;
+    padding:10px;
+}

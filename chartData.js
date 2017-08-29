@@ -2,7 +2,7 @@
 
 function makeCharts(){
     
-   //    makePieChart("B02001")
+    //  makePieChart("B02001")
    //    makePieChart("B08301")
    //    makePieChart("B08303")
    //    makePieChart("B15003")
@@ -109,8 +109,13 @@ function makeBarChart(tableCode){
         .attr("height",function(d,i){return barWidth-4})
      //   .attr('height', yScale.rangeBand)
         .attr("width",function(d,i){return xScale(getPercent(d[0]))})
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-        
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .on("mouseover",function(d){
+            d3.select(this).attr("fill","red")
+        })
+        .on("mouseout",function(d){
+            d3.select(this).attr("fill","#000")
+        })
 //    var labels = d3.select("#"+tableCode)
 //        .data(data)
 //        .enter()

@@ -12,10 +12,10 @@ function makeCharts(){
     makeBarChart("B08301")
     makeBarChart("B08303")
     makeBarChart("B15003")
-    makeBarChart("B25003")
-    makeBarChart("B25002")
+    makePieChart("B25003")
+    makePieChart("B25002")
     makeBarChart("B23025")
-    makeBarChart("B19057")
+    makePieChart("B19057")
      makeBarChart("B07201")
      makeBarChart("B15012")
      //makeBarChart("B16002")
@@ -64,7 +64,7 @@ function makeBarChart(tableCode){
         keys.push(key)
     }
     
-    var margin = {left:150,top:0}
+    var margin = {left:180,top:0}
     var barWidth = 90
     var height = barWidth*data.length
     var width = 450+margin.left

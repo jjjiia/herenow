@@ -106,15 +106,16 @@ function makeBarChart(tableCode){
         .append("rect")
         .attr("y",function(d,i){return i*barWidth})
         .attr("x",function(d,i){return 0; })
+        .attr("fill","#aaa")
         .attr("height",function(d,i){return barWidth-4})
      //   .attr('height', yScale.rangeBand)
         .attr("width",function(d,i){return xScale(getPercent(d[0]))})
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .on("mouseover",function(d){
-            d3.select(this).attr("fill","red")
+            d3.select(this).attr("fill","#000")
         })
         .on("mouseout",function(d){
-            d3.select(this).attr("fill","#000")
+            d3.select(this).attr("fill","#aaa")
         })
 //    var labels = d3.select("#"+tableCode)
 //        .data(data)

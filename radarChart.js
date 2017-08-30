@@ -1,3 +1,29 @@
+function formatDataRadar(tableCode){
+   // console.log(returnedData)
+    var radarData = []
+    for(var g in returnedData){
+        var gData = returnedData[g]
+        var geoId = Object.keys(gData.data)
+        var tableData = gData.data[geoId][tableCode].estimate
+        var formattedGData = []
+        for(var i in tableData){
+            var key = i
+            var value = getPercent(key,g)
+            var keyTitle = getTitle(key)
+            if(value!=100){
+                formattedGData.push({axis:keyTitle,value:value/100})
+            }
+        }
+        radarData.push(formattedGData)
+    }
+    var sorted =  radarData[0].sort(function(a,b){
+        return b["value"]-a["value"];
+    });
+    radarData[0]=sorted
+    //getrid of 0 categories
+    //console.log(radarData)
+    return radarData
+}
 /////////////////////////////////////////////////////////
 /////////////// The Radar Chart Function ////////////////
 /////////////// Written by Nadieh Bremer ////////////////
@@ -5,19 +31,33 @@
 /////////// Inspired by the code of alangrafu ///////////
 /////////////////////////////////////////////////////////
 	
-function RadarChart(id, data, options) {
+function RadarChart(id, tableCode) {
+    
+    var data = formatDataRadar(tableCode)
+    var color = d3.scale.ordinal()
+    	.range(["#888","#555","red"]);
+    var options = {
+      w: 400,
+      h: 600,
+      margin: {top: 100, right: 120, bottom: 100, left: 120},
+      maxValue: 0.5,
+      levels: 5,
+      roundStrokes: true,
+      color: color
+    };
+    
 	var cfg = {
 	 w: 600,				//Width of the circle
 	 h: 600,				//Height of the circle
 	 margin: {top: 20, right: 20, bottom: 20, left: 20}, //The margins of the SVG
-	 levels: 3,				//How many levels or inner circles should there be drawn
+	 levels: 2,				//How many levels or inner circles should there be drawn
 	 maxValue: 0, 			//What is the value that the biggest circle will represent
 	 labelFactor: 1.25, 	//How much farther than the radius of the outer circle should the labels be placed
-	 wrapWidth: 60, 		//The number of pixels after which a label needs to be given a new line
-	 opacityArea: 0.35, 	//The opacity of the area of the blob
+	 wrapWidth: 140, 		//The number of pixels after which a label needs to be given a new line
+	 opacityArea: 0.1, 	//The opacity of the area of the blob
 	 dotRadius: 4, 			//The size of the colored circles of each blog
-	 opacityCircles: 0.1, 	//The opacity of the circles of each blob
-	 strokeWidth: 2, 		//The width of the stroke around each blob
+	 opacityCircles: 0, 	//The opacity of the circles of each blob
+	 strokeWidth: 1, 		//The width of the stroke around each blob
 	 roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
 	 color: d3.scale.category10()	//Color function
 	};
@@ -42,13 +82,13 @@ function RadarChart(id, data, options) {
 	var rScale = d3.scale.linear()
 		.range([0, radius])
 		.domain([0, maxValue]);
-		
+	
 	/////////////////////////////////////////////////////////
 	//////////// Create the container SVG and g /////////////
 	/////////////////////////////////////////////////////////
 
 	//Remove whatever chart with the same id/class was present before
-	d3.select(id).select("svg").remove();
+	//d3.select(id).select("svg").remove();
 	
 	//Initiate the radar chart SVG
 	var svg = d3.select(id).append("svg")
@@ -64,11 +104,11 @@ function RadarChart(id, data, options) {
 	/////////////////////////////////////////////////////////
 	
 	//Filter for the outside glow
-	var filter = g.append('defs').append('filter').attr('id','glow'),
-		feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur'),
-		feMerge = filter.append('feMerge'),
-		feMergeNode_1 = feMerge.append('feMergeNode').attr('in','coloredBlur'),
-		feMergeNode_2 = feMerge.append('feMergeNode').attr('in','SourceGraphic');
+	var filter = g.append('defs').append('filter').attr('id','glow')
+	var feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur')
+	var feMerge = filter.append('feMerge')
+	//var feMergeNode_1 = feMerge.append('feMergeNode').attr('in','coloredBlur')
+	var feMergeNode_2 = feMerge.append('feMergeNode').attr('in','SourceGraphic');
 
 	/////////////////////////////////////////////////////////
 	/////////////// Draw the Circular grid //////////////////
@@ -85,20 +125,20 @@ function RadarChart(id, data, options) {
 		.attr("class", "gridCircle")
 		.attr("r", function(d, i){return radius/cfg.levels*d;})
 		.style("fill", "#CDCDCD")
-		.style("stroke", "#CDCDCD")
+		.style("stroke", "#aaa")
 		.style("fill-opacity", cfg.opacityCircles)
-		.style("filter" , "url(#glow)");
+		//.style("filter" , "url(#glow)");
 
 	//Text indicating at what % each level is
 	axisGrid.selectAll(".axisLabel")
 	   .data(d3.range(1,(cfg.levels+1)).reverse())
 	   .enter().append("text")
 	   .attr("class", "axisLabel")
-	   .attr("x", 4)
+	   .attr("x", 8)
 	   .attr("y", function(d){return -d*radius/cfg.levels;})
 	   .attr("dy", "0.4em")
-	   .style("font-size", "10px")
-	   .attr("fill", "#737373")
+	   .style("font-size", "12px")
+	   .attr("fill", "#000")
 	   .text(function(d,i) { return Format(maxValue * d/cfg.levels); });
 
 	/////////////////////////////////////////////////////////
@@ -115,16 +155,16 @@ function RadarChart(id, data, options) {
 	axis.append("line")
 		.attr("x1", 0)
 		.attr("y1", 0)
-		.attr("x2", function(d, i){ return rScale(maxValue*1.1) * Math.cos(angleSlice*i - Math.PI/2); })
-		.attr("y2", function(d, i){ return rScale(maxValue*1.1) * Math.sin(angleSlice*i - Math.PI/2); })
+		.attr("x2", function(d, i){ return rScale(maxValue*1.05) * Math.cos(angleSlice*i - Math.PI/2); })
+		.attr("y2", function(d, i){ return rScale(maxValue*1.05) * Math.sin(angleSlice*i - Math.PI/2); })
 		.attr("class", "line")
-		.style("stroke", "white")
-		.style("stroke-width", "2px");
+		.style("stroke", "#aaa")
+		.style("stroke-width", "1px");
 
 	//Append the labels at each axis
 	axis.append("text")
 		.attr("class", "legend")
-		.style("font-size", "11px")
+		.style("font-size", "14px")
 		.attr("text-anchor", "middle")
 		.attr("dy", "0.35em")
 		.attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
@@ -142,9 +182,9 @@ function RadarChart(id, data, options) {
 		.radius(function(d) { return rScale(d.value); })
 		.angle(function(d,i) {	return i*angleSlice; });
 		
-	if(cfg.roundStrokes) {
-		radarLine.interpolate("cardinal-closed");
-	}
+//	if(cfg.roundStrokes) {
+//		radarLine.interpolate("cardinal-closed");
+//	}
 				
 	//Create a wrapper for the blobs	
 	var blobWrapper = g.selectAll(".radarWrapper")
@@ -159,22 +199,22 @@ function RadarChart(id, data, options) {
 		.attr("d", function(d,i) { return radarLine(d); })
 		.style("fill", function(d,i) { return cfg.color(i); })
 		.style("fill-opacity", cfg.opacityArea)
-		.on('mouseover', function (d,i){
-			//Dim all blobs
-			d3.selectAll(".radarArea")
-				.transition().duration(200)
-				.style("fill-opacity", 0.1); 
-			//Bring back the hovered over blob
-			d3.select(this)
-				.transition().duration(200)
-				.style("fill-opacity", 0.7);	
-		})
-		.on('mouseout', function(){
-			//Bring back all blobs
-			d3.selectAll(".radarArea")
-				.transition().duration(200)
-				.style("fill-opacity", cfg.opacityArea);
-		});
+		//.on('mouseover', function (d,i){
+		//	//Dim all blobs
+		//	d3.selectAll(".radarArea")
+		//		.transition().duration(200)
+		//		.style("fill-opacity", 0.1); 
+		//	//Bring back the hovered over blob
+		//	d3.select(this)
+		//		.transition().duration(200)
+		//		.style("fill-opacity", 0.7);	
+		//})
+		//.on('mouseout', function(){
+		//	//Bring back all blobs
+		//	d3.selectAll(".radarArea")
+		//		.transition().duration(200)
+		//		.style("fill-opacity", cfg.opacityArea);
+		//});
 		
 	//Create the outlines	
 	blobWrapper.append("path")
@@ -183,19 +223,19 @@ function RadarChart(id, data, options) {
 		.style("stroke-width", cfg.strokeWidth + "px")
 		.style("stroke", function(d,i) { return cfg.color(i); })
 		.style("fill", "none")
-		.style("filter" , "url(#glow)");		
+		//.style("filter" , "url(#glow)");		
 	
 	//Append the circles
-	blobWrapper.selectAll(".radarCircle")
-		.data(function(d,i) { return d; })
-		.enter().append("circle")
-		.attr("class", "radarCircle")
-		.attr("r", cfg.dotRadius)
-		.attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
-		.attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
-		.style("fill", function(d,i,j) { return cfg.color(j); })
-		.style("fill-opacity", 0.8);
-
+//	blobWrapper.selectAll(".radarCircle")
+//		.data(function(d,i) { return d; })
+//		.enter().append("circle")
+//		.attr("class", "radarCircle")
+//		.attr("r", cfg.dotRadius)
+//		.attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
+//		.attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
+//		.style("fill", function(d,i,j) { return cfg.color(j); })
+//		.style("fill-opacity", 0.8);
+//
 	/////////////////////////////////////////////////////////
 	//////// Append invisible circles for tooltip ///////////
 	/////////////////////////////////////////////////////////

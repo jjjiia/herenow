@@ -228,20 +228,10 @@ function displayDataText(data){
 }
 function formatCensusData(data){
     //returnedData = data
-var color = d3.scale.ordinal()
-	.range(["#888","#555","red"]);
 	
-var radarChartOptions = {
-  w: 600,
-  h: 600,
-  margin: {top: 100, right: 100, bottom: 100, left: 100},
-  maxValue: 0.5,
-  levels: 5,
-  roundStrokes: true,
-  color: color
-};
 //Call function to draw the Radar chart
-RadarChart(".charts", formatDataRadar("B02001"), radarChartOptions);
+    RadarChart(".charts", "B02001");
+    RadarChart(".charts", "B08301");
 //RadarChart(".charts", formatDataRadar("B08301"), radarChartOptions);
 //RadarChart(".charts", formatDataRadar("B08303"), radarChartOptions);
 //RadarChart(".charts", formatDataRadar("B15003"), radarChartOptions);
@@ -250,31 +240,6 @@ RadarChart(".charts", formatDataRadar("B02001"), radarChartOptions);
     makeParagraph()
     //makeCharts()
 }
-function formatDataRadar(tableCode){
-   // console.log(returnedData)
-    var radarData = []
-    for(var g in returnedData){
-        var gData = returnedData[g]
-        var geoId = Object.keys(gData.data)
-        var tableData = gData.data[geoId][tableCode].estimate
-        var formattedGData = []
-        for(var i in tableData){
-            var key = i
-            var value = getPercent(key,g)
-            var keyTitle = getTitle(key)
-            if(value!=100){
-                formattedGData.push({axis:keyTitle,value:value/100})
-            }
-        }
-        radarData.push(formattedGData)
-    }
-    var sorted =  radarData[0].sort(function(a,b){
-        return b["value"]-a["value"];
-    });
-    radarData[0]=sorted
-    //getrid of 0 categories
-    //console.log(radarData)
-    return radarData
-}
+
 
 getLocation()

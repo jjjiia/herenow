@@ -232,8 +232,8 @@ var color = d3.scale.ordinal()
 	.range(["#888","#555","red"]);
 	
 var radarChartOptions = {
-  w: 300,
-  h: 300,
+  w: 600,
+  h: 600,
   margin: {top: 100, right: 100, bottom: 100, left: 100},
   maxValue: 0.5,
   levels: 5,
@@ -241,8 +241,8 @@ var radarChartOptions = {
   color: color
 };
 //Call function to draw the Radar chart
-//RadarChart(".charts", formatDataRadar("B02001"), radarChartOptions);
-RadarChart(".charts", formatDataRadar("B08301"), radarChartOptions);
+RadarChart(".charts", formatDataRadar("B02001"), radarChartOptions);
+//RadarChart(".charts", formatDataRadar("B08301"), radarChartOptions);
 //RadarChart(".charts", formatDataRadar("B08303"), radarChartOptions);
 //RadarChart(".charts", formatDataRadar("B15003"), radarChartOptions);
 

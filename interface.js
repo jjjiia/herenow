@@ -5,7 +5,7 @@
  // d3.select("body").append("div").attr("class","section").attr("id","censusLabelCensus").html("census geography from Census")
  
   d3.select("#main").append("div").attr("class","section").attr("id","paragraph").html("paragraph")
-  d3.select("#main").append("div").attr("class","section").attr("id","charts")//.html("charts")
+  d3.select("#main").append("div").attr("class","charts").attr("id","charts")//.html("charts")
   d3.select("#main").append("div").attr("class","section").attr("id","data").html("data")
 
 

@@ -59,31 +59,31 @@ function makeParagraph(){
 var paragraph = "<strong>You are at </strong> a place where the median age is "
 +formatValues(getValue("B01002001"))+". "
 
-+formatPercents(getPercent("B02001002"))+" residents are white, "
-+formatPercents(getPercent("B02001003"))+" are black or african american, "
-+formatPercents(getPercent("B02001004"))+" are american indian or alaska native, and "
-+formatPercents(getPercent("B02001005"))+" are asian. Where "
-+formatPercents(getPercent("B16002002"))+" of households speak only English"
-+", and "+ formatPercents(getPercent("B07201002"))+ " lived in the same house last year. "
-+formatPercents(getPercent("B08301010"))+" commute on public transportation, "
-+formatPercents(getPercentSum(["B08302003","B08302002","B08302004"]))+ " leave for work before 6am. Where "
-+formatPercents(getPercentSum(["B15003022","B15003023","B15003024","B15003025"]))+" of residents graduated college,"
-+" their most popular majors were "+ formatValues(getTopRanked("B15012",3))+". "
-+formatPercents(getPercent("B23025005"))+" are unemployed. "
-+formatPercents(getPercentSum(["B27010017","B27010033","B27010050","B27010066"]))+" have no insurance coverage. "
-+ "The median household income is "+ formatMoney(getValue("B19013001"))+", and "
-+ formatPercents(getPercentSum(["B19001014","B19001015","B19001016","B19001017"]))+" of households make more than $100,000."
-
++formatPercents(getPercent("B02001002",0))+" residents are white, "
++formatPercents(getPercent("B02001003",0))+" are black or african american, "
++formatPercents(getPercent("B02001004",0))+" are american indian or alaska native, and "
++formatPercents(getPercent("B02001005",0))+" are asian. Where "
++formatPercents(getPercent("B16002002",0))+" of households speak only English"
++", and "+ formatPercents(getPercent("B07201002",0))+ " lived in the same house last year. "
++formatPercents(getPercent("B08301010",0))+" commute on public transportation, "
++formatPercents(getPercentSum(["B08302003","B08302002","B08302004"],0))+ " leave for work before 6am. Where "
+//+formatPercents(getPercentSum(["B15003022","B15003023","B15003024","B15003025"]))+" of residents graduated college,"
+//+" their most popular majors were "+ formatValues(getTopRanked("B15012",3))+". "
+//+formatPercents(getPercent("B23025005",0))+" are unemployed. "
+//+formatPercents(getPercentSum(["B27010017","B27010033","B27010050","B27010066"]))+" have no insurance coverage. "
+//+ "The median household income is "+ formatMoney(getValue("B19013001",0))+", and "
+//+ formatPercents(getPercentSum(["B19001014","B19001015","B19001016","B19001017"]))+" of households make more than $100,000."
+//
 d3.select("#paragraph").html(paragraph)
 }
 var colors = ["#de4645","#4dbb31","#ea4a73","#45b865","#e64821","#87b733","#b3324f","#5b821d","#a5361a","#b1a930","#d77231","#d1902e"]
 
 
-function getPercent(code){
+function getPercent(code,geoGroup){
     var table = code.substr(0, code.length -3)
-    var codeValue = returnedData.data[Object.keys(returnedData.data)][table].estimate[code]
+    var codeValue = returnedData[geoGroup].data[Object.keys(returnedData[geoGroup].data)][table].estimate[code]
     var totalCode = table+"001"
-    var totalValue = returnedData.data[Object.keys(returnedData.data)][table].estimate[totalCode]
+    var totalValue = returnedData[geoGroup].data[Object.keys(returnedData[geoGroup].data)][table].estimate[totalCode]
     var percent = codeValue/totalValue*100
     return percent
 }
@@ -102,17 +102,21 @@ function formatValues(value){
     return "<span style=\"color:"+color+"\"><strong>"+value+"</strong></span>"
 }
 
-function getPercentSum(codes){
+function getPercentSum(codes,geoGroup){
     var sum = 0
     for(var c in codes){
         var code = codes[c]
-        sum+=getPercent(code)
+        sum+=getPercent(code,geoGroup)
     }
     return sum
 }
 function getTitle(code){
     var table = code.substr(0, code.length -3)
-    var codeTitle = returnedData.tables[table].columns[code].name
+    if(returnedData.length>1){
+        var codeTitle = returnedData[0].tables[table].columns[code].name    
+    }else{
+        var codeTitle = returnedData.tables[table].columns[code].name
+    }
     return codeTitle
 }
 function getTableData(tableCode){
@@ -157,25 +161,42 @@ function getTopRanked(tableCode,ranks){
 }
 function getValue(code){
     var table = code.substr(0, code.length -3)
-    var codeValue = returnedData.data[Object.keys(returnedData.data)][table].estimate[code]
+    if(returnedData.length>1){
+        var codeValue = returnedData[0].data[Object.keys(returnedData[0].data)][table].estimate[code]
+    }else{
+        var codeValue = returnedData.data[Object.keys(returnedData.data)][table].estimate[code]        
+    }
     return codeValue
 }
 var returnedData = null
 function formatCensusIds(json){
     var blockGroupid = "15000US"+json.Block.FIPS.slice(0,12)
-    d3.select("#censusLabelFCC").html("<strong>Block Group:</strong> "+blockGroupid ) 
+    var county = "050|04000US"+json.County.FIPS
+    var tractId = "14000US"+json.Block.FIPS.slice(0,11)
+    
+    d3.select("#censusLabelFCC").html("<strong>Block Group:</strong> "+blockGroupid)
     pub.censusId = blockGroupid
-    getCensusData(pub.censusId,allTables)
+    getCensusData(pub.censusId,tractId,county,allTables)
 //    var tableName = "B01002"
 }
 
 //https://api.censusreporter.org/1.0/data/show/latest?table_ids=B01001&geo_ids=16000US5367000
 
-function getCensusData(geoid,tableCode){
-    var censusReporter = "https://api.censusreporter.org/1.0/data/show/latest?table_ids="+tableCode+"&geo_ids="+geoid
-//    console.log(censusReporter)
-    $.getJSON( censusReporter, function( data ) {
-        formatCensusData(data)
+function getCensusData(geoid,tractId,county,tableCode){
+    var allData = []
+    var censusReporter = "https://api.censusreporter.org/1.0/data/show/latest?table_ids="+tableCode+"&geo_ids="+county
+    $.getJSON( censusReporter, function( blockGroupData ) {
+        allData.push(blockGroupData)
+        var censusReporter = "https://api.censusreporter.org/1.0/data/show/latest?table_ids="+tableCode+"&geo_ids="+tractId
+        $.getJSON( censusReporter, function( tractData ) {
+            allData.push(tractData)
+            var censusReporter = "https://api.censusreporter.org/1.0/data/show/latest?table_ids="+tableCode+"&geo_ids="+geoid            
+            $.getJSON( censusReporter, function( countyData ) {
+                allData.push(countyData)
+                returnedData = allData
+                formatCensusData(countyData)                
+            });    
+        });
     });
 }
 
@@ -206,48 +227,54 @@ function displayDataText(data){
     d3.select("#data").html(displayText)
 }
 function formatCensusData(data){
-    returnedData = data
-    var formattedData = formatDataSingle(data)
-       displayDataText(formattedData)
-    makeParagraph()
-    makeCharts()
-}
-function formatDataSingle(data){
-    var geoid = Object.keys(data.data)
-    var geoData = data.data[geoid]
-    //var tables = Object.keys(codeDictionary)
-    var tables = data.tables
-    
-    var formattedData = {}
-    
-    for(var i in tables){
-        var tableCode = i
-        var table = tables[i]        
+    //returnedData = data
+var color = d3.scale.ordinal()
+	.range(["#888","#555","red"]);
+	
+var radarChartOptions = {
+  w: 300,
+  h: 300,
+  margin: {top: 100, right: 100, bottom: 100, left: 100},
+  maxValue: 0.5,
+  levels: 5,
+  roundStrokes: true,
+  color: color
+};
+//Call function to draw the Radar chart
+//RadarChart(".charts", formatDataRadar("B02001"), radarChartOptions);
+RadarChart(".charts", formatDataRadar("B08301"), radarChartOptions);
+//RadarChart(".charts", formatDataRadar("B08303"), radarChartOptions);
+//RadarChart(".charts", formatDataRadar("B15003"), radarChartOptions);
 
-        formattedData[tableCode]={}
-        formattedData[tableCode]["title"]=table.title
-        formattedData[tableCode]["columns"]={}
-        //console.log(table)
-        var columns = Object.keys(table["columns"])
-        for(var c in columns){
-            var columnCode = columns[c]
-            var columnName = table["columns"][columnCode].name
-            var columnValue = geoData[tableCode].estimate[columnCode]
-            //&& columnValue!=0
-            if(columnValue!=undefined){
-                if(columnCode.substr(columnCode.length -3)!="001"){
-                    var totalCode = columnCode.substr(0, columnCode.length -3)+"001"
-                    var totalValue = geoData[tableCode].estimate[totalCode]
-                    var percent = Math.round(columnValue/totalValue*100)
-                    formattedData[tableCode]["columns"][columnCode]={"title":columnName,"value":columnValue,"percent":percent}   
-                }else{
-                    formattedData[tableCode]["columns"][columnCode]={"title":columnName,"value":columnValue}   
-                }
-                
-            }            
+    //   displayDataText(formattedData)
+    makeParagraph()
+    //makeCharts()
+}
+function formatDataRadar(tableCode){
+   // console.log(returnedData)
+    var radarData = []
+    for(var g in returnedData){
+        var gData = returnedData[g]
+        var geoId = Object.keys(gData.data)
+        var tableData = gData.data[geoId][tableCode].estimate
+        var formattedGData = []
+        for(var i in tableData){
+            var key = i
+            var value = getPercent(key,g)
+            var keyTitle = getTitle(key)
+            if(value!=100){
+                formattedGData.push({axis:keyTitle,value:value/100})
+            }
         }
+        radarData.push(formattedGData)
     }
-    return formattedData
+    var sorted =  radarData[0].sort(function(a,b){
+        return b["value"]-a["value"];
+    });
+    radarData[0]=sorted
+    //getrid of 0 categories
+    //console.log(radarData)
+    return radarData
 }
 
 getLocation()

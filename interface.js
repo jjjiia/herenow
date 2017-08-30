@@ -5,6 +5,9 @@
  // d3.select("body").append("div").attr("class","section").attr("id","censusLabelCensus").html("census geography from Census")
  
   d3.select("#main").append("div").attr("class","section jumbotron").attr("id","paragraph").html("paragraph")
+
+  d3.select("#main").append("div").attr("class","section charts jumbotron").attr("id","barCharts")//.html("charts")
+
   d3.select("#main").append("div").attr("class","section charts jumbotron").attr("id","charts")//.html("charts")
   d3.select("#main").append("div").attr("class","section jumbotron").attr("id","data").html("data")
 

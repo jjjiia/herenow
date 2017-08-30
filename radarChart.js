@@ -37,9 +37,9 @@ function RadarChart(id, tableCode) {
     var color = d3.scale.ordinal()
     	.range(["#888","#555","red"]);
     var options = {
-      w: 400,
-      h: 600,
-      margin: {top: 100, right: 120, bottom: 100, left: 120},
+      w:  window.innerWidth-200,
+      h:  window.innerWidth-200,
+      margin: {top: 100, right: 100, bottom: 100, left: 100},
       maxValue: 0.5,
       levels: 5,
       roundStrokes: true,
@@ -47,8 +47,8 @@ function RadarChart(id, tableCode) {
     };
     
 	var cfg = {
-	 w: 600,				//Width of the circle
-	 h: 600,				//Height of the circle
+	 w:  window.innerWidth-200,				//Width of the circle
+	 h: window.innerWidth-200,				//Height of the circle
 	 margin: {top: 20, right: 20, bottom: 20, left: 20}, //The margins of the SVG
 	 levels: 2,				//How many levels or inner circles should there be drawn
 	 maxValue: 0, 			//What is the value that the biggest circle will represent

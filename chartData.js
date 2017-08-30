@@ -7,22 +7,22 @@ function makeCharts(){
    //    makePieChart("B08303")
    //    makePieChart("B15003")
    //
-    
+    drawBarKey()
     makeBarChart("B02001")
     makeBarChart("B08301")
     makeBarChart("B08303")
     makeBarChart("B15003")
-   // makePieChart("B25003")
-   // makePieChart("B25002")
+//   // makePieChart("B25003")
+//   // makePieChart("B25002")
     makeBarChart("B23025")
- //   makePieChart("B19057")
+// //   makePieChart("B19057")
      makeBarChart("B07201")
      makeBarChart("B15012")
      //makeBarChart("B16002")
    // console.log("charts")
 }
 function getTableName(tableCode){
-   return returnedData.tables[tableCode].title
+   return returnedData["blockGroup"].tables[tableCode].title
 }
 function wrap(text, width) {
   text.each(function() {
@@ -47,26 +47,60 @@ function wrap(text, width) {
     }
   });
 }
+function drawBarKey(){
+    
+    var legendKeys = ["blockGroup","tract","county"]
+    var colors = {
+        county:"blue",
+        blockGroup:"#aaa",
+        tract:"red"
+    }
+    console.log(legendKeys)
+    var svg = d3.select("#barCharts").append("svg").attr("width",100).attr("height",60)
+    svg.selectAll(".key")
+    .data(legendKeys)
+    .enter()
+    .append("rect")
+    .attr("width",10)
+    .attr("height",10)
+    .attr("x",10)
+    .attr("y",function(d,i){console.log(d); return i*20})
+    .attr("fill",function(d){return colors[d]})
+    
+    svg.selectAll(".key")
+    .data(legendKeys)
+    .enter()
+    .append("text")
+    .text(function(d){return d})
+    .attr("x",30)
+    .attr("y",function(d,i){console.log(d); return i*20+10})
+    .attr("fill",function(d){return colors[d]})
+    .attr("font-size",12)
+            
+}
 function makeBarChart(tableCode){
     var data = getTableData(tableCode)
-    var chartDiv = d3.select("#charts").append("div").html(getTableName(tableCode)+"</br/>").attr("id",tableCode)
+    var chartDiv = d3.select("#barCharts").append("div").html(getTableName(tableCode)+"</br/>").attr("id",tableCode)
     .attr("class","barChart")
-    
-    var max = getPercent(data[0][0])
+    var max = 100
     
     var keys = []
+    
+    var keyCodes = []
     var maxKeyLength = 0
-    for(var i in data){
-        var key = getTitle(data[i][0])+" "+Math.round(getPercent(data[i][0]))+"%"
+    for(var i in data["blockGroup"]){
+        var keyCode = data["blockGroup"][i][0]
+        var key = getTitle(keyCode)
         if(key.length>maxKeyLength){
             maxKeyLength = key.length
         }
+        keyCodes.push(keyCode)
         keys.push(key)
     }
     
     var margin = {left:180,top:0}
-    var barWidth = 90
-    var height = barWidth*data.length
+    var barWidth = 40
+    var height = barWidth*keys.length
     var width = 450+margin.left
     
     var xScale = d3.scale.linear().domain([0,max]).range([10,width-margin.left])
@@ -98,46 +132,58 @@ function makeBarChart(tableCode){
         .attr("transform", "translate(" + (margin.left-5) + ",0 )")
         .call(yAxis)
         .selectAll(".tick text")
-      .call(wrap, margin.left-5);;
-        
+      .call(wrap, margin.left-5);
+      
     var chart = svg.selectAll("rect")
-        .data(data)
+        .data(keyCodes)
         .enter()
         .append("rect")
         .attr("y",function(d,i){return i*barWidth})
         .attr("x",function(d,i){return 0; })
         .attr("fill","#aaa")
         .attr("height",function(d,i){return barWidth-4})
-     //   .attr('height', yScale.rangeBand)
-        .attr("width",function(d,i){return xScale(getPercent(d[0]))})
+        .attr("width",function(d,i){
+            var percent = getPercent(d,"blockGroup")
+            return xScale(percent)})
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        .on("mouseover",function(d){
-            d3.select(this).attr("fill","#000")
+         .attr("opacity",.2)
+            
+    svg.selectAll(".tract").data(keyCodes)
+        .enter()
+        .append("rect")
+        .attr("y",function(d,i){return i*barWidth})
+        .attr("x",function(d,i){
+            var percent = getPercent(d,"tract")
+            return xScale(percent)
         })
-        .on("mouseout",function(d){
-            d3.select(this).attr("fill","#aaa")
+        .attr("fill","red")
+        .attr("class","tract")
+        .attr("height",function(d,i){return barWidth-4})
+        .attr("width",function(d,i){
+            return 2
+            var percent = getPercent(d,"tract")
+            return xScale(percent)
         })
-//    var labels = d3.select("#"+tableCode)
-//        .data(data)
-//        .enter()
-//        .append("div")
-//        .attr("top",function(d,i){return i*barWidth+10+"px"})
-//        .attr("left",function(d,i){console.log(d); return yScale(getPercent(d[0]))+"px" })
-//        .html(function(d,i){return getTitle(d[0])})
-//        .attr("class","barLabel")
-        
-   //     d3.selectAll(".barLabel").attr("transform", "rotate(0)")
-        
-//    svg.append("g")
-//        .attr("class", "x axis")
-//        .attr("transform", "translate(0," + height/2 + ")")
-//        .call(xAxis)
-        //.selectAll("text")
-        //.attr("y", 0)
-        //.attr("x", 9)
-       //// .attr("dy", ".35em")
-        ////.attr("transform", "rotate(90)")
-        //.style("text-anchor", "end");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+         .attr("opacity",.1)
+    
+    svg.selectAll(".county").data(keyCodes)
+        .enter()
+        .append("rect")
+        .attr("y",function(d,i){return i*barWidth})
+        .attr("x",function(d,i){
+            var percent = getPercent(d,"county")
+            return xScale(percent)
+        })
+        .attr("fill","blue")
+        .attr("class","county")
+        .attr("height",function(d,i){return barWidth-4})
+        .attr("width",function(d,i){
+            return 2
+        })
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+         .attr("opacity",.1)
+
 }
 
 

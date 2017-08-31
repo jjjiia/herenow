@@ -1,7 +1,4 @@
-
-
 function makeCharts(){
-    
     //  makePieChart("B02001")
    //    makePieChart("B08301")
    //    makePieChart("B08303")
@@ -55,7 +52,7 @@ function drawBarKey(){
         blockGroup:"#aaa",
         tract:"red"
     }
-    console.log(legendKeys)
+   // console.log(legendKeys)
     var svg = d3.select("#barCharts").append("svg").attr("width",100).attr("height",60)
     svg.selectAll(".key")
     .data(legendKeys)
@@ -64,7 +61,7 @@ function drawBarKey(){
     .attr("width",10)
     .attr("height",10)
     .attr("x",10)
-    .attr("y",function(d,i){console.log(d); return i*20})
+    .attr("y",function(d,i){return i*20})
     .attr("fill",function(d){return colors[d]})
     
     svg.selectAll(".key")
@@ -73,7 +70,7 @@ function drawBarKey(){
     .append("text")
     .text(function(d){return d})
     .attr("x",30)
-    .attr("y",function(d,i){console.log(d); return i*20+10})
+    .attr("y",function(d,i){return i*20+10})
     .attr("fill",function(d){return colors[d]})
     .attr("font-size",12)
             
@@ -185,7 +182,68 @@ function makeBarChart(tableCode){
          .attr("opacity",.1)
 
 }
+function drawMap(geoData){
+    drawMapLayer(geoData,"#aaa")
+    
+}
 
+function drawMapLayer(geoData,color){
+    console.log(geoData)
+    var width = 300
+    var height = 300
+    var svg = d3.select("#map").append("svg").attr("width",width).attr("height",height)
+        
+        //need to generalize projection into global var later
+    var center = [pub.coordinates[1],pub.coordinates[0]]
+    var lat = center[1]
+    var lng = center[0]
+    
+    var projection = d3.geo.mercator().scale(60000).center(center)		    
+    .translate([width/2,height/2])
+
+        //d3 geo path uses projections, it is similar to regular paths in line graphs
+    //svg.append("circle")
+    //    .attr("r",2)
+    //    .attr("fill","#000")
+    //    .attr("cx",function(d){
+    //        //to get projected dot position, use this basic formula
+    //        var projectedLng = projection([lng,lat])[0]
+    //        return projectedLng
+    //    })
+    //    .attr("cy",function(d){
+    //        var projectedLat = projection([lng,lat])[1]
+    //        return projectedLat
+    //    })
+    var path = d3.geo.path().projection(projection);
+    var lineFunction = d3.svg.line()
+        .x(function(d){
+            return projection([d[0],d[1]])[0]
+        })
+        .y(function(d){return projection([d[0],d[1]])[1]})
+        .interpolate("linear");
+        //push data, add path
+        //[topojson.object(geoData, geoData.geometry)]   
+         
+	svg.append("path")
+		.attr("class","county")
+		.attr("d",lineFunction(geoData["countyGeo"].geometry.coordinates[0]))
+		.attr("stroke","blue")
+        .attr("fill","blue") 
+        .attr("opacity",.4)    
+
+	svg.append("path")
+		.attr("class","tract")
+		.attr("d",lineFunction(geoData["tractGeo"].geometry.coordinates[0]))
+		.attr("stroke","red")
+        .attr("fill","red")  
+        .attr("opacity",1)        
+	svg.append("path")
+		.attr("class","blockGroup")
+		.attr("d",lineFunction(geoData["blockGeo"].geometry.coordinates[0]))
+		.attr("stroke","none")
+        .attr("fill","#000")
+        .attr("opacity",1)
+}
 
 function makePieChart(tableCode){
     var data = getTableData(tableCode)

@@ -167,6 +167,7 @@ function getValue(code){
     return codeValue
 }
 var returnedData = null
+var returnedGeoData = null
 function formatCensusIds(json){
     var blockGroupid = "15000US"+json.Block.FIPS.slice(0,12)
     var county = "050|04000US"+json.County.FIPS
@@ -174,13 +175,13 @@ function formatCensusIds(json){
     
     d3.select("#censusLabelFCC").html("<strong>Block Group:</strong> "+blockGroupid)
     pub.censusId = blockGroupid
-    getCensusData(pub.censusId,tractId,county,allTables)
+    getCensusData(pub.censusId,tractId,county,allTables,json)
 //    var tableName = "B01002"
 }
 
 //https://api.censusreporter.org/1.0/data/show/latest?table_ids=B01001&geo_ids=16000US5367000
 
-function getCensusData(geoid,tractId,county,tableCode){
+function getCensusData(geoid,tractId,county,tableCode,json){
     var allData = []
     var censusReporter = "https://api.censusreporter.org/1.0/data/show/latest?table_ids="+tableCode+"&geo_ids="+geoid
     $.getJSON( censusReporter, function( blockGroupData ) {
@@ -194,6 +195,22 @@ function getCensusData(geoid,tractId,county,tableCode){
                 returnedData = allData
                 formatCensusData(countyData)                
             });    
+        });
+    });
+    
+    var allGeoData = {}
+    var blockGeoRequest = "https://api.censusreporter.org/1.0/geo/tiger2015/"+geoid+"?geom=true"
+    var tractGeoRequest = "https://api.censusreporter.org/1.0/geo/tiger2015/"+tractId+"?geom=true"
+    var countyGeoRequest = "https://api.censusreporter.org/1.0/geo/tiger2015/"+"05000US"+json.County.FIPS+"?geom=true"
+    $.getJSON( blockGeoRequest, function( blockGeoData ) {
+        allGeoData["blockGeo"]=blockGeoData
+        $.getJSON( tractGeoRequest, function( tractGeoData ) {
+            allGeoData["tractGeo"]=tractGeoData
+            $.getJSON( countyGeoRequest, function( countyGeoData ) {
+                allGeoData["countyGeo"]=countyGeoData
+                returnedGeoData = allGeoData
+                drawMap(allGeoData)
+            });
         });
     });
 }
@@ -238,6 +255,8 @@ function formatCensusData(data){
     makeParagraph()
     makeCharts()
 }
+//var url = "https://api.censusreporter.org/1.0/geo/tiger2013/16000US5367000/parents"
+
 
 
 getLocation()

@@ -4,7 +4,8 @@
   d3.select("#main").append("div").attr("class","section").attr("id","censusLabelFCC").html("census geography from FCC")
  // d3.select("body").append("div").attr("class","section").attr("id","censusLabelCensus").html("census geography from Census")
  
-  d3.select("#main").append("div").attr("class","section jumbotron").attr("id","paragraph").html("paragraph")
+  //d3.select("#main").append("div").attr("class","section jumbotron").attr("id","paragraph").html("paragraph")
+  d3.select("#main").append("div").attr("class","section map jumbotron").attr("id","map")//.html("MAP")
 
   d3.select("#main").append("div").attr("class","section charts jumbotron").attr("id","barCharts")//.html("charts")
 

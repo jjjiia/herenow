@@ -4,7 +4,6 @@ function makeCharts(){
    //    makePieChart("B08303")
    //    makePieChart("B15003")
    //
-    drawBarKey()
     makeBarChart("B02001")
     makeBarChart("B08301")
     makeBarChart("B08303")
@@ -48,20 +47,41 @@ function drawBarKey(){
     
     var legendKeys = ["blockGroup","tract","county"]
     var colors = {
-        county:"blue",
-        blockGroup:"#aaa",
-        tract:"red"
+        county:"#d1902e",
+        blockGroup:"#45b865",
+        tract:"#e64821"
     }
    // console.log(legendKeys)
-    var svg = d3.select("#barCharts").append("svg").attr("width",100).attr("height",60)
+    
+    
+    
+    var svg = d3.select("#map svg")
+    svg.append("rect").attr("x",0).attr("y",20).attr("width",80).attr("height",60)
+    .attr('stroke',"#aaa").attr("fill","#fff").attr("opacity",.8)
+    
+    var squareSize = 8
+
+    var cross = d3.svg.symbol().type('cross')
+    		.size(25);
+    svg.append("path").attr("class","location")
+        .attr("fill","#000")
+        .attr("d",cross)
+    	.attr('transform',function(){
+             return "translate(12,30) rotate(-45)"; 
+             });
+     svg.append("text").text("location")
+        .attr("x",squareSize*3)
+        .attr("y",33)
+        .attr("font-size",10)
+             
     svg.selectAll(".key")
     .data(legendKeys)
     .enter()
     .append("rect")
-    .attr("width",10)
-    .attr("height",10)
-    .attr("x",10)
-    .attr("y",function(d,i){return i*20})
+    .attr("width",squareSize)
+    .attr("height",squareSize)
+    .attr("x",squareSize)
+    .attr("y",function(d,i){return i*squareSize*1.5+40})
     .attr("fill",function(d){return colors[d]})
     
     svg.selectAll(".key")
@@ -69,10 +89,10 @@ function drawBarKey(){
     .enter()
     .append("text")
     .text(function(d){return d})
-    .attr("x",30)
-    .attr("y",function(d,i){return i*20+10})
+    .attr("x",squareSize*3)
+    .attr("y",function(d,i){return i*squareSize*1.5+47})
     .attr("fill",function(d){return colors[d]})
-    .attr("font-size",12)
+    .attr("font-size",10)
             
 }
 function makeBarChart(tableCode){
@@ -183,66 +203,131 @@ function makeBarChart(tableCode){
 
 }
 function drawMap(geoData){
-    drawMapLayer(geoData,"#aaa")
-    
-}
-
-function drawMapLayer(geoData,color){
-    console.log(geoData)
+    var svg = d3.select("#map").append("svg").attr("width",300).attr("height",300)
+//    
+    var center = [Math.round(pub.coordinates[1]*10000)/10000,Math.round(pub.coordinates[0]*10000)/10000]
+//    console.log(center)
+//  var center = [-122.4183, 37.7750]
+    var div = "map"
+//
+////    var width = Math.max(960, window.innerWidth),
+//  //      height = Math.max(500, window.innerHeight);
     var width = 300
     var height = 300
-    var svg = d3.select("#map").append("svg").attr("width",width).attr("height",height)
+     drawBaseMap(width,height,div,center)  
+  
+    drawMapLayer(geoData)  
+  
+    drawBarKey()
+    
+}
+function drawBaseMap(width,height,div,center){
+
+    var tiler = d3.geo.tile()
+        .size([width, height]);
+
+    var projection = d3.geo.mercator()
+        .center(center)
+        .scale((1 << 21) / 2 / Math.PI)
+        .translate([width / 2, height / 2]);
+
+    var path = d3.geo.path()
+        .projection(projection);
+
+    var svg = d3.select("#"+div+" svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    svg.selectAll("g")
+        .data(tiler
+          .scale(projection.scale() * 2 * Math.PI)
+          .translate(projection([0, 0])))
+      .enter().append("g")
+        .each(function(d) {
+          var g = d3.select(this);
+          d3.json("https://vector.mapzen.com/osm/roads/" + d[2] + "/" + d[0] + "/" + d[1] + ".json?api_key=vector-tiles-LM25tq4", function(error, json) {
+            if (error) throw error;
+
+            g.selectAll("path")
+              .data(json.features.sort(function(a, b) { return a.properties.sort_key - b.properties.sort_key; }))
+            .enter().append("path")
+              .attr("class", function(d) { return d.properties.kind; })
+              .attr("d", path);
+          });
+        });
+}
+
+function drawMapLayer(geoData){
+    var colors = {
+        county:"#d1902e",
+        blockGroup:"#45b865",
+        tract:"#e64821"
+    }
+    
+    var width = 300
+    var height = 300
+    var svg = d3.select("#map svg")
         
         //need to generalize projection into global var later
     var center = [pub.coordinates[1],pub.coordinates[0]]
     var lat = center[1]
     var lng = center[0]
     
-    var projection = d3.geo.mercator().scale(60000).center(center)		    
-    .translate([width/2,height/2])
+    var projection = d3.geo.mercator()
+        .scale((1 << 21) / 2 / Math.PI)
+    .center(center)		    
+        .translate([width/2,height/2])
 
         //d3 geo path uses projections, it is similar to regular paths in line graphs
-    //svg.append("circle")
-    //    .attr("r",2)
-    //    .attr("fill","#000")
-    //    .attr("cx",function(d){
-    //        //to get projected dot position, use this basic formula
-    //        var projectedLng = projection([lng,lat])[0]
-    //        return projectedLng
-    //    })
-    //    .attr("cy",function(d){
-    //        var projectedLat = projection([lng,lat])[1]
-    //        return projectedLat
-    //    })
     var path = d3.geo.path().projection(projection);
     var lineFunction = d3.svg.line()
         .x(function(d){
             return projection([d[0],d[1]])[0]
         })
-        .y(function(d){return projection([d[0],d[1]])[1]})
+        .y(function(d){
+            console.log(projection([d[0],d[1]])[1])
+            return projection([d[0],d[1]])[1]})
         .interpolate("linear");
         //push data, add path
         //[topojson.object(geoData, geoData.geometry)]   
          
-	svg.append("path")
+	svg.selectAll("path")
+        .append("path")
 		.attr("class","county")
 		.attr("d",lineFunction(geoData["countyGeo"].geometry.coordinates[0]))
-		.attr("stroke","blue")
-        .attr("fill","blue") 
-        .attr("opacity",.4)    
+		.attr("stroke",colors.county)
+        .attr("stroke-width",5)
+        .attr("fill",colors.county) 
+        .attr("opacity",1)    
 
-	svg.append("path")
+	svg
+        .append("path")
 		.attr("class","tract")
 		.attr("d",lineFunction(geoData["tractGeo"].geometry.coordinates[0]))
-		.attr("stroke","red")
-        .attr("fill","red")  
+		.attr("stroke",colors.tract)
+        .attr("fill",colors.tract)  
+        .attr("stroke-width",4)
         .attr("opacity",1)        
-	svg.append("path")
+        
+	svg
+        .append("path")
 		.attr("class","blockGroup")
 		.attr("d",lineFunction(geoData["blockGeo"].geometry.coordinates[0]))
-		.attr("stroke","none")
-        .attr("fill","#000")
+		.attr("stroke",colors.blockGroup)
+        .attr("stroke-width",2)
+        .attr("fill",colors.blockGroup)
         .attr("opacity",1)
+
+    var cross = d3.svg.symbol().type('cross')
+			.size(20);
+            
+    svg.append("path").attr("class","location")
+        .attr("d",cross)
+		.attr('transform',function(d,i){
+            var projectedLng = projection([lng,lat])[0]
+            var projectedLat = projection([lng,lat])[1]
+             return "translate("+projectedLng+","+projectedLat+") rotate(-45)"; 
+             });
 }
 
 function makePieChart(tableCode){
@@ -296,4 +381,21 @@ function makePieChart(tableCode){
         .text(function(d) { 
             return getTitle(d.data[0])
             return d.data[0] });
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            x.innerHTML = "User denied the request for Geolocation."
+            break;
+        case error.POSITION_UNAVAILABLE:
+            x.innerHTML = "Location information is unavailable."
+            break;
+        case error.TIMEOUT:
+            x.innerHTML = "The request to get user location timed out."
+            break;
+        case error.UNKNOWN_ERROR:
+            x.innerHTML = "An unknown error occurred."
+            break;
+    }
 }

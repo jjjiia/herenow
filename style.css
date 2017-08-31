@@ -19,7 +19,8 @@ body{
     color:green;
 }
 #paragraph{
-    font-size:30px;
+    font-size:20px;
+    line-height:120%;
 }
 .barLabel{
     font-size:16px;
@@ -37,10 +38,19 @@ body{
 .barChart{
     border-bottom:1px solid black;
     padding:10px;
-    font-size:36px;
+    font-size:24px;
     font-decoration:bold;
 }
-.jumbotron{
-    background-color:#fff;
-    padding:5px;
+.col-sm-4{
 }
+path {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.major_road { stroke: #aaa;  }
+.minor_road { stroke: #bbb; }
+.highway { stroke: #ccc; stroke-width: 1.5px; }
+
+.location{fill:#000;}

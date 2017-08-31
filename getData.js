@@ -13,7 +13,12 @@ function formatLocation(position){
     var alt = position.coords.altitude 
     pub.coordinates = [lat,lng]
     d3.select("#coordinates").html("<strong>Lat:</strong> "+Math.round(lat*1000000)/1000000+" <strong>Lng:</strong> "+Math.round(lng*10000)/10000+" <strong>Alt:</strong> "+Math.round(alt*1000000)/1000000)//+"<br/>"+speed+"<br/>"+alt+"<br/>"+heading)
+    
+ //   var testCoordinate = [33.949564, -91.198632]
+  //  pub.coordinates =testCoordinate
+//    return testCoordinate
     return [lat,lng]
+    
 }
 
 //var sampleLocation = [40.718914, -73.9547791]  

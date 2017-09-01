@@ -14,9 +14,9 @@ function formatLocation(position){
     pub.coordinates = [lat,lng]
     d3.select("#coordinates").html("<strong>Lat:</strong> "+Math.round(lat*1000000)/1000000+" <strong>Lng:</strong> "+Math.round(lng*10000)/10000+" <strong>Alt:</strong> "+Math.round(alt*1000000)/1000000)//+"<br/>"+speed+"<br/>"+alt+"<br/>"+heading)
     
- //   var testCoordinate = [33.949564, -91.198632]
-  //  pub.coordinates =testCoordinate
-//    return testCoordinate
+//  var testCoordinate = [33.949564, -91.198632]
+//  pub.coordinates =testCoordinate
+//  return testCoordinate
     return [lat,lng]
     
 }
@@ -62,23 +62,49 @@ console.log("showing this many tables: "+allTables.split(",").length)
 
 function makeParagraph(){
 var paragraph = "<strong>You are at </strong> a place where the median age is "
-+formatValues(getValue("B01002001"))+". "
++formatValues(getValue("B01002001","blockGroup"))+" "
++"and the population is "+formatValues(getTopRanked("B02001",4,"blockGroup"))+". "
++formatPercents(getPercent("B16002002","blockGroup"))+" of households speak only English, "
++formatPercents(getPercent("B16002003","blockGroup"))+" of households are Spanish speaking, "
++formatPercents(getPercent("B16002006","blockGroup"))+" speak other Indo-European languages, and "
++formatPercents(getPercent("B16002009","blockGroup"))+"speak Asian and Pacific Island languages. "
++"<br/>"
++"<br/>"
++formatPercents(getPercent("B07201002","blockGroup"))+ " lived in the same house last year, while "
++formatPercents(getPercent("B07201007","blockGroup"))+" moved from a different city(Metropolitan Statistical Area), and "
++formatPercents(getPercent("B07201014","blockGroup"))+" moved from a different country."
++"<br/>"
++"<br/>"
 
-+formatPercents(getPercent("B02001002","blockGroup"))+" residents are white, "
-+formatPercents(getPercent("B02001003","blockGroup"))+" are black or african american, "
-+formatPercents(getPercent("B02001004","blockGroup"))+" are american indian or alaska native, and "
-+formatPercents(getPercent("B02001005","blockGroup"))+" are asian. Where "
-+formatPercents(getPercent("B16002002","blockGroup"))+" of households speak only English"
-+", and "+ formatPercents(getPercent("B07201002","blockGroup"))+ " lived in the same house last year. "
 +formatPercents(getPercent("B08301010","blockGroup"))+" commute on public transportation, "
-+formatPercents(getPercentSum(["B08302003","B08302002","B08302004"],"blockGroup"))+ " leave for work before 6am. Where "
-+formatPercents(getPercentSum(["B15003022","B15003023","B15003024","B15003025"],"blockGroup"))+" of residents graduated college,"
-+" their most popular majors were "+ formatValues(getTopRanked("B15012",3,"blockGroup"))+". "
++formatPercents(getPercentSum(["B08302003","B08302002","B08302004"],"blockGroup"))+ " leave for work before 6am. "
++formatPercents(getPercentSum(["B08303002","B08303003","B08303004","B08303005","B08303006","B08303007"],"blockGroup"))
++" have commutes that are less than 30 minutes long."
+    
++"<br/>"
++"<br/>"
+    
++formatPercents(getPercentSum(["B15003022","B15003023","B15003024","B15003025"],"blockGroup"))+" hold a Bachelor's degree, "
++formatPercents(getPercentSum(["B15003023","B15003024","B15003025"],"blockGroup"))+" hold a Master's degree, and "
++getPercent("B15003025","blockGroup")+"% hold a  Doctorate. "
++"The most popular fields of undergraduate study were "+ formatValues(getTopRanked("B15012",5,"blockGroup"))+". "
++"<br/>"
++"<br/>"
+    
 +formatPercents(getPercent("B23025005","blockGroup"))+" are unemployed. "
-//+formatPercents(getPercentSum(["B27010017","B27010033","B27010050","B27010066"]))+" have no insurance coverage. "
-//+ "The median household income is "+ formatMoney(getValue("B19013001",0))+", and "
-//+ formatPercents(getPercentSum(["B19001014","B19001015","B19001016","B19001017"]))+" of households make more than $100,000."
-//
++formatPercents(getPercentSum(["B27010017","B27010033","B27010050","B27010066"],"blockGroup"))+" have no insurance coverage. "
++getPercent("B19057002","blockGroup")+"% receive public assistance income. "
++"<br/>"
++"<br/>"
+    
++ "The median household income is "+ formatMoney(getValue("B19013001","blockGroup"))+". "
++ formatPercents(getPercentSum(["B19001002","B19001003","B19001004","B19001005","B19001006"],"blockGroup"))+" of households make less than $30,000, and "
++ formatPercents(getPercentSum(["B19001014","B19001015","B19001016","B19001017"],"blockGroup"))+" of households make more than $100,000."
++"<br/>"
++"<br/>"
+
++formatPercents(getPercent("B25002002","blockGroup"))+" of residences are occupied. "
++formatPercents(getPercent("B25002002","blockGroup"))+" of occupied residences are rentals."
 d3.select("#paragraph").html(paragraph)
 }
 var colors = ["#de4645","#4dbb31","#ea4a73","#45b865","#e64821","#87b733","#b3324f","#5b821d","#a5361a","#b1a930","#d77231","#d1902e"]
@@ -139,7 +165,6 @@ function getTableData(tableCode){
       //  });
      
     }
-    
     return formattedGData
 }
 
@@ -158,17 +183,17 @@ function getTopRanked(tableCode,ranks,geoGroup){
         var code = tops[t][0]
         var codeValue = Math.round(getPercent(code,geoGroup))
         var codeTitle = getTitle(code,geoGroup)
-        
-        s+=codeTitle+"("+codeValue+"%), "
+    var color = colors[Math.round(Math.random()*colors.length)]
+     s+="<span style=\"color:"+color+"\">"+codeTitle+"("+codeValue+"%), "+"</span>"
     }
     
     s = s.slice(0,s.lastIndexOf(", "))
     s = s.substring(0,s.lastIndexOf(","))+", and "+s.substring(s.lastIndexOf(",")+1)
     return s
 }
-function getValue(code){
+function getValue(code,geoGroup){
     var table = code.substr(0, code.length -3)
-    var codeValue = returnedData["blockGroup"].data[Object.keys(returnedData["blockGroup"].data)][table].estimate[code]
+    var codeValue = returnedData[geoGroup].data[Object.keys(returnedData[geoGroup].data)][table].estimate[code]
     return codeValue
 }
 var returnedData = null
@@ -224,27 +249,34 @@ var columnsToDisplay = []
 
 
 function displayDataText(data){
-    var displayText = ""
+    var dt = ""
     
-    for(var i in data){
-        var title = data[i].title
-        var columns = data[i].columns
-        //console.log(title)
-        displayText+="<br/><strong>"+title+"</strong><br/>"
-        for(var c in columns){
-            var columnTitle = columns[c].title
-            var value = columns[c].value
-            displayText += c+": "+columnTitle+": "+value
-            if(columns[c].percent!=undefined){
-                displayText+=" or "+columns[c].percent+"%"+"<br/>"
-            }else{
-                displayText+="<br/>"
+    var tables = Object.keys(data["blockGroup"].tables)
+    
+    for(var i in tables){
+        var table = tables[i]
+        var tableName = getTableName(table)
+        var tableData = getTableData(table)
+        var color = colors[Math.round(Math.random()*colors.length)]
+        dt+="</br><span style=\"color:"+color+"; font-size = 24px\"><strong>"+tableName+"</strong></span></br>"
+        
+        for(var g in tableData){
+            var geoLabel = g
+            var geoData = tableData[g]
+            dt+="<strong>"+geoLabel+"</strong><br/>"
+            
+            for(c in geoData){
+                var code = geoData[c][0]
+                var value = geoData[c][1]
+                var percent = getPercent(code,geoLabel)
+                var title = getTitle(code)
+                dt+=code+" "+title+": "+value+"("+Math.round(percent)+"%)"+"<br/>"
             }
-           // console.log([columnTitle,value])
+            break
         }
     }
     
-    d3.select("#data").html(displayText)
+    d3.select("#data").html(dt)
 }
 function formatCensusData(data){
     //returnedData = data
@@ -256,7 +288,7 @@ function formatCensusData(data){
 //RadarChart(".charts", formatDataRadar("B08303"), radarChartOptions);
 //RadarChart(".charts", formatDataRadar("B15003"), radarChartOptions);
 
-    //   displayDataText(formattedData)
+   displayDataText(returnedData)
     makeParagraph()
     makeCharts()
 }

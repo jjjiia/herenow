@@ -2,10 +2,11 @@
 
 body{
     font-size:16px;
-    padding:30px;
+    margin:10px;
+    
 }
 .section{
-    border-top:1px solid black;
+    border-bottom:1px solid black;
 }
 .title{
     font-weight:bold;
@@ -18,9 +19,24 @@ body{
 .value{
     color:green;
 }
+#censusLabelFCC{
+        padding:20px;
+}
+#coordinates{
+        padding:20px;
+}
 #paragraph{
     font-size:20px;
     line-height:120%;
+    padding:20px;
+}
+#map{
+    padding:0px;
+    margin:0px;
+}
+#key{
+    padding:20px;
+    
 }
 .barLabel{
     font-size:16px;
@@ -38,10 +54,11 @@ body{
 .barChart{
     border-bottom:1px solid black;
     padding:10px;
-    font-size:24px;
-    font-decoration:bold;
+    font-size:16px;
+    font-weight:bold;
 }
 .col-sm-4{
+    border:1px solid black;
 }
 path {
   fill: none;

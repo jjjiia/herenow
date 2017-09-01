@@ -4,17 +4,18 @@ function makeCharts(){
    //    makePieChart("B08303")
    //    makePieChart("B15003")
    //
-    makeBarChart("B02001")
-    makeBarChart("B08301")
-    makeBarChart("B08303")
-    makeBarChart("B15003")
+    makeBarChart("B02001",true)
+    makeBarChart("B08301",true)
+    makeBarChart("B08303",false)
+    makeBarChart("B15003",false)
 //   // makePieChart("B25003")
 //   // makePieChart("B25002")
-    makeBarChart("B23025")
+    makeBarChart("B23025",true)
 // //   makePieChart("B19057")
-     makeBarChart("B07201")
-     makeBarChart("B15012")
-     //makeBarChart("B16002")
+     makeBarChart("B07201",true)
+     makeBarChart("B15012",true)
+     makeBarChart("B23025",true)
+     makeBarChart("B19001",false)
    // console.log("charts")
 }
 function getTableName(tableCode){
@@ -46,56 +47,19 @@ function wrap(text, width) {
 function drawBarKey(){
     
     var legendKeys = ["blockGroup","tract","county"]
-    var colors = {
-        county:"#d1902e",
-        blockGroup:"#45b865",
-        tract:"#e64821"
-    }
+    var colors = geoColors
    // console.log(legendKeys)
     
-    
-    
-    var svg = d3.select("#map svg")
-    svg.append("rect").attr("x",0).attr("y",20).attr("width",80).attr("height",60)
-    .attr('stroke',"#aaa").attr("fill","#fff").attr("opacity",.8)
-    
-    var squareSize = 8
-
-    var cross = d3.svg.symbol().type('cross')
-    		.size(25);
-    svg.append("path").attr("class","location")
-        .attr("fill","#000")
-        .attr("d",cross)
-    	.attr('transform',function(){
-             return "translate(12,30) rotate(-45)"; 
-             });
-     svg.append("text").text("location")
-        .attr("x",squareSize*3)
-        .attr("y",33)
-        .attr("font-size",10)
-             
-    svg.selectAll(".key")
-    .data(legendKeys)
-    .enter()
-    .append("rect")
-    .attr("width",squareSize)
-    .attr("height",squareSize)
-    .attr("x",squareSize)
-    .attr("y",function(d,i){return i*squareSize*1.5+40})
-    .attr("fill",function(d){return colors[d]})
-    
-    svg.selectAll(".key")
-    .data(legendKeys)
-    .enter()
-    .append("text")
-    .text(function(d){return d})
-    .attr("x",squareSize*3)
-    .attr("y",function(d,i){return i*squareSize*1.5+47})
-    .attr("fill",function(d){return colors[d]})
-    .attr("font-size",10)
+    var text = ""
+    for(var i in legendKeys){
+        var key = legendKeys[i]
+        var color = colors[key]
+        text +="<span style=\"color:"+color+"; font-size = 30px\">&#9744; "+key+"</span>  "   
+    }    
+    d3.select("#key").html(text)
             
 }
-function makeBarChart(tableCode){
+function makeBarChart(tableCode, sort){
     var data = getTableData(tableCode)
     var chartDiv = d3.select("#barCharts").append("div").html(getTableName(tableCode)+"</br/>").attr("id",tableCode)
     .attr("class","barChart")
@@ -105,8 +69,20 @@ function makeBarChart(tableCode){
     
     var keyCodes = []
     var maxKeyLength = 0
-    for(var i in data["blockGroup"]){
-        var keyCode = data["blockGroup"][i][0]
+    if(sort == true){
+        var sorted = data["blockGroup"].sort(function(a,b){
+              return b[1]-a[1];})
+    }else{
+        sorted = data["blockGroup"]
+    }
+    
+    
+    //  var sorted = formattedGData.sort(function(a,b){
+    //      return b[1]-a[1];
+    //  });
+    
+    for(var i in sorted){
+        var keyCode = sorted[i][0]
         var key = getTitle(keyCode)
         if(key.length>maxKeyLength){
             maxKeyLength = key.length
@@ -157,14 +133,15 @@ function makeBarChart(tableCode){
         .append("rect")
         .attr("y",function(d,i){return i*barWidth})
         .attr("x",function(d,i){return 0; })
-        .attr("fill","#aaa")
+        .attr("fill",geoColors["blockGroup"])
         .attr("height",function(d,i){return barWidth-4})
         .attr("width",function(d,i){
             var percent = getPercent(d,"blockGroup")
             return xScale(percent)})
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-         .attr("opacity",.2)
-            
+         .attr("opacity",.5)
+    
+    
     svg.selectAll(".tract").data(keyCodes)
         .enter()
         .append("rect")
@@ -173,16 +150,16 @@ function makeBarChart(tableCode){
             var percent = getPercent(d,"tract")
             return xScale(percent)
         })
-        .attr("fill","red")
+        .attr("fill",geoColors["tract"])
         .attr("class","tract")
         .attr("height",function(d,i){return barWidth-4})
         .attr("width",function(d,i){
-            return 2
+            return 4
             var percent = getPercent(d,"tract")
             return xScale(percent)
         })
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-         .attr("opacity",.1)
+         .attr("opacity",1)
     
     svg.selectAll(".county").data(keyCodes)
         .enter()
@@ -192,14 +169,29 @@ function makeBarChart(tableCode){
             var percent = getPercent(d,"county")
             return xScale(percent)
         })
-        .attr("fill","blue")
+        .attr("fill",geoColors["county"])
         .attr("class","county")
         .attr("height",function(d,i){return barWidth-4})
         .attr("width",function(d,i){
-            return 2
+            return 4
         })
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-         .attr("opacity",.1)
+         .attr("opacity",1)
+svg.selectAll(".percentLabel")
+        .data(keyCodes)
+        .enter()
+        .append("text")
+        .attr("class","percentLabel")
+        .attr("y",function(d,i){return i*barWidth+barWidth/2})
+        .attr("x",function(d,i){
+            var percent = getPercent(d,"blockGroup")
+            return xScale(percent)+5})
+        .attr("fill",geoColors["blockGroup"])
+            .attr("opacity",.8)
+        .text(function(d,i){
+            var percent = getPercent(d,"blockGroup")
+            return Math.round(percent)+"%"})
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
 }
 function drawMap(geoData){
@@ -210,14 +202,13 @@ function drawMap(geoData){
 //  var center = [-122.4183, 37.7750]
     var div = "map"
 //
-////    var width = Math.max(960, window.innerWidth),
-//  //      height = Math.max(500, window.innerHeight);
-    var width = 300
-    var height = 300
-     drawBaseMap(width,height,div,center)  
-  
-    drawMapLayer(geoData)  
-  
+    var width = Math.max(500, window.innerWidth),
+      height = Math.max(500, window.innerWidth);
+//    var width = 300
+//    var height = 300
+//
+    drawBaseMap(width,height,div,center)  
+    drawMapLayer(geoData,width,height)  
     drawBarKey()
     
 }
@@ -257,15 +248,12 @@ function drawBaseMap(width,height,div,center){
         });
 }
 
-function drawMapLayer(geoData){
-    var colors = {
-        county:"#d1902e",
-        blockGroup:"#45b865",
-        tract:"#e64821"
-    }
+function drawMapLayer(geoData,width,height){
     
-    var width = 300
-    var height = 300
+//    var width = 300
+//    var height = 300
+    
+    var colors = geoColors
     var svg = d3.select("#map svg")
         
         //need to generalize projection into global var later
@@ -285,7 +273,7 @@ function drawMapLayer(geoData){
             return projection([d[0],d[1]])[0]
         })
         .y(function(d){
-            console.log(projection([d[0],d[1]])[1])
+           // console.log(projection([d[0],d[1]])[1])
             return projection([d[0],d[1]])[1]})
         .interpolate("linear");
         //push data, add path
@@ -294,7 +282,7 @@ function drawMapLayer(geoData){
 	svg.selectAll("path")
         .append("path")
 		.attr("class","county")
-		.attr("d",lineFunction(geoData["countyGeo"].geometry.coordinates[0]))
+		.attr("d",lineFunction(geoData["countyGeo"].geometry.coordinates[1]))
 		.attr("stroke",colors.county)
         .attr("stroke-width",5)
         .attr("fill",colors.county) 

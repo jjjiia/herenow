@@ -5,10 +5,10 @@
  // d3.select("body").append("div").attr("class","section").attr("id","censusLabelCensus").html("census geography from Census")
  
 //  d3.select("#main").append("div").attr("class","col-sm-4").attr("id","map2")//.html("MAP")
-  d3.select("#main").append("div").attr("class","col-sm-4").attr("id","paragraph").html("paragraph")
-  d3.select("#main").append("div").attr("class","col-sm-4").attr("id","map")//.html("MAP")
+  d3.select("#main").append("div").attr("class","col-lg-4 col-md-4").attr("id","paragraph").html("paragraph")
+  d3.select("#main").append("div").attr("class","col-lg-4 col-md-4").attr("id","map")//.html("MAP")
 
-  d3.select("#main").append("div").attr("class","col-sm-4").attr("id","barCharts")//.html("charts")
+  d3.select("#main").append("div").attr("class","col-lg-4 col-md-4").attr("id","barCharts")//.html("charts")
 
 //  d3.select("#main").append("div").attr("class","section charts col-sm-3").attr("id","charts")//.html("charts")
 //  d3.select("#main").append("div").attr("class","section col-sm-3").attr("id","data").html("data")

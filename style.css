@@ -71,3 +71,33 @@ path {
 .highway { stroke: #ccc; stroke-width: 1.5px; }
 
 .location{fill:#000;}
+
+@media (min-width: 858px) {
+    #paragraph {
+        font-size: 36px;
+    }
+}
+
+@media (min-width: 780px) {
+    #paragraph {
+        font-size: 24px;
+    }
+}
+
+@media (min-width: 702px) {
+    #paragraph {
+        font-size: 20px;
+    }
+}
+
+@media (min-width: 724px) {
+    #paragraph{
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 623px) {
+    #paragraph {
+        font-size: 16px;
+    }
+}

@@ -282,7 +282,7 @@ function drawMapLayer(geoData,width,height){
 	svg.selectAll("path")
         .append("path")
 		.attr("class","county")
-		.attr("d",lineFunction(geoData["countyGeo"].geometry.coordinates[1]))
+		.attr("d",lineFunction(geoData["countyGeo"].geometry.coordinates[0]))
 		.attr("stroke",colors.county)
         .attr("stroke-width",5)
         .attr("fill",colors.county) 

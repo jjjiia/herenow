@@ -1,7 +1,6 @@
 @charset "utf-8";
 
 body{
-    font-size:16px;
     margin:10px;
     
 }
@@ -74,30 +73,30 @@ path {
 
 @media (min-width: 858px) {
     #paragraph {
-        font-size: 36px;
+        font-size: 60px;
     }
 }
 
 @media (min-width: 780px) {
     #paragraph {
-        font-size: 24px;
+        font-size: 36px;
     }
 }
 
 @media (min-width: 702px) {
     #paragraph {
-        font-size: 20px;
+        font-size: 36px;
     }
 }
 
 @media (min-width: 724px) {
     #paragraph{
-        font-size: 18px;
+        font-size: 36px;
     }
 }
 
 @media (max-width: 623px) {
     #paragraph {
-        font-size: 16px;
+        font-size: 36px;
     }
 }

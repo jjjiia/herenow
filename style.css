@@ -79,24 +79,24 @@ path {
 
 @media (min-width: 780px) {
     #paragraph {
-        font-size: 36px;
+        font-size: 60px;
     }
 }
 
 @media (min-width: 702px) {
     #paragraph {
-        font-size: 36px;
+        font-size: 60px;
     }
 }
 
 @media (min-width: 724px) {
     #paragraph{
-        font-size: 36px;
+        font-size: 60px;
     }
 }
 
 @media (max-width: 623px) {
     #paragraph {
-        font-size: 36px;
+        font-size: 60px;
     }
 }

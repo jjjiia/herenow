@@ -4,18 +4,18 @@ function makeCharts(){
    //    makePieChart("B08303")
    //    makePieChart("B15003")
    //
-    makeBarChart("B02001",true)
-    makeBarChart("B08301",true)
-    makeBarChart("B08303",false)
-    makeBarChart("B15003",false)
+    makeBarChart("B02001",true,"all")
+    makeBarChart("B08301",true,4)
+    makeBarChart("B08303",true,3)
+    makeBarChart("B15003",true,5)
 //   // makePieChart("B25003")
 //   // makePieChart("B25002")
-    makeBarChart("B23025",true)
+    makeBarChart("B23025",true,"all")
 // //   makePieChart("B19057")
-     makeBarChart("B07201",true)
-     makeBarChart("B15012",true)
-     makeBarChart("B23025",true)
-     makeBarChart("B19001",false)
+     makeBarChart("B07201",true,1)
+     makeBarChart("B15012",true,"all")
+     makeBarChart("B23025",true,"all")
+     makeBarChart("B19001",false,"all")
    // console.log("charts")
 }
 function getTableName(tableCode){
@@ -59,7 +59,7 @@ function drawBarKey(){
     d3.select("#key").html(text)
             
 }
-function makeBarChart(tableCode, sort){
+function makeBarChart(tableCode, sort,sliced){
     var data = getTableData(tableCode)
     var chartDiv = d3.select("#barCharts").append("div").html(getTableName(tableCode)+"</br/>").attr("id",tableCode)
     .attr("class","barChart")
@@ -74,6 +74,12 @@ function makeBarChart(tableCode, sort){
               return b[1]-a[1];})
     }else{
         sorted = data["blockGroup"]
+    }
+    
+    if(sliced == "all"){
+        sorted = sorted
+    }else{
+        sorted = sorted.slice(0,sliced)
     }
     
     

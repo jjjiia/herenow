@@ -38,11 +38,12 @@ body{
     padding:20px;
     
 }
+.percentLabel{font-size:24px;}
 .barLabel{
     font-size:16px;
 }
 .axis text {
-  font: 18px sans-serif;
+  font: 24px sans-serif;
 }
 
 .axis line,

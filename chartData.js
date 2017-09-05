@@ -98,7 +98,7 @@ function makeBarChart(tableCode, sort,sliced){
     }
     
     var margin = {left:260,top:0}
-    var barWidth = 80
+    var barWidth = 120
     var height = barWidth*keys.length
     var width = window.innerWidth-20
     
@@ -199,7 +199,7 @@ svg.selectAll(".percentLabel")
         .text(function(d,i){
             var percent = getPercent(d,"blockGroup")
             return Math.round(percent)+"%"})
-        .attr("transform", "translate(" + (width-50) + "," + margin.top + ")")
+        .attr("transform", "translate(" + (width-70) + "," + margin.top + ")")
 
 }
 function drawMap(geoData){

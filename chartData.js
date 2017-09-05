@@ -91,13 +91,13 @@ function makeBarChart(tableCode, sort){
         keys.push(key)
     }
     
-    var margin = {left:180,top:0}
-    var barWidth = 40
+    var margin = {left:260,top:0}
+    var barWidth = 80
     var height = barWidth*keys.length
-    var width = window.innerWidth
+    var width = window.innerWidth-20
     
-    var xScale = d3.scale.linear().domain([0,max]).range([10,width-margin.left])
-    var yScale = d3.scale.ordinal().domain(keys)    .rangeRoundBands([0, height-10],0);
+    var xScale = d3.scale.linear().domain([0,max]).range([10,width-margin.left-50])
+    var yScale = d3.scale.ordinal().domain(keys).rangeRoundBands([0, height-10],0);
 //.rangePoints([0,height])
     
  
@@ -177,6 +177,7 @@ function makeBarChart(tableCode, sort){
         })
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
          .attr("opacity",1)
+        
 svg.selectAll(".percentLabel")
         .data(keyCodes)
         .enter()
@@ -184,6 +185,7 @@ svg.selectAll(".percentLabel")
         .attr("class","percentLabel")
         .attr("y",function(d,i){return i*barWidth+barWidth/2})
         .attr("x",function(d,i){
+            return 0
             var percent = getPercent(d,"blockGroup")
             return xScale(percent)+5})
         .attr("fill",geoColors["blockGroup"])
@@ -191,7 +193,7 @@ svg.selectAll(".percentLabel")
         .text(function(d,i){
             var percent = getPercent(d,"blockGroup")
             return Math.round(percent)+"%"})
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .attr("transform", "translate(" + (width-50) + "," + margin.top + ")")
 
 }
 function drawMap(geoData){
@@ -242,7 +244,7 @@ function drawBaseMap(width,height,div,center){
             g.selectAll("path")
               .data(json.features.sort(function(a, b) { return a.properties.sort_key - b.properties.sort_key; }))
             .enter().append("path")
-              .attr("class", function(d) { return d.properties.kind; })
+              .attr("class", function(d) { return d.properties.kind+" basemap"; })
               .attr("d", path);
           });
         });
@@ -293,7 +295,7 @@ function drawMapLayer(geoData,width,height){
 		.attr("class","tract")
 		.attr("d",lineFunction(geoData["tractGeo"].geometry.coordinates[0]))
 		.attr("stroke",colors.tract)
-        .attr("fill",colors.tract)  
+        .attr("fill","none")  
         .attr("stroke-width",4)
         .attr("opacity",1)        
         
@@ -304,7 +306,7 @@ function drawMapLayer(geoData,width,height){
 		.attr("stroke",colors.blockGroup)
         .attr("stroke-width",2)
         .attr("fill",colors.blockGroup)
-        .attr("opacity",1)
+        .attr("opacity",.7)
 
     var cross = d3.svg.symbol().type('cross')
 			.size(20);

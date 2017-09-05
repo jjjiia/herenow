@@ -42,7 +42,7 @@ body{
     font-size:16px;
 }
 .axis text {
-  font: 12px sans-serif;
+  font: 18px sans-serif;
 }
 
 .axis line,
@@ -61,11 +61,10 @@ body{
     border:1px solid black;
 }
 path {
-  fill: none;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
-
+.basemap{  fill: none;}
 .major_road { stroke: #aaa;  }
 .minor_road { stroke: #bbb; }
 .highway { stroke: #ccc; stroke-width: 1.5px; }

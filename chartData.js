@@ -227,7 +227,7 @@ function drawBaseMap(width,height,div,center){
 
     var projection = d3.geo.mercator()
         .center(center)
-        .scale((1 << 23) / 2 / Math.PI)
+        .scale((1 << 21) / 2 / Math.PI)
         .translate([width / 2, height / 2]);
 
     var path = d3.geo.path()
@@ -270,7 +270,7 @@ function drawMapLayer(geoData,width,height){
     var lng = center[0]
     
     var projection = d3.geo.mercator()
-        .scale((1 << 23) / 2 / Math.PI)
+        .scale((1 << 21) / 2 / Math.PI)
     .center(center)		    
         .translate([width/2,height/2])
 

@@ -94,7 +94,7 @@ function makeBarChart(tableCode, sort){
     var margin = {left:180,top:0}
     var barWidth = 40
     var height = barWidth*keys.length
-    var width = 450+margin.left
+    var width = window.innerWidth
     
     var xScale = d3.scale.linear().domain([0,max]).range([10,width-margin.left])
     var yScale = d3.scale.ordinal().domain(keys)    .rangeRoundBands([0, height-10],0);
@@ -202,8 +202,8 @@ function drawMap(geoData){
 //  var center = [-122.4183, 37.7750]
     var div = "map"
 //
-    var width = Math.max(500, window.innerWidth),
-      height = Math.max(500, window.innerWidth);
+    var width = window.innerWidth
+      height = window.innerWidth
 //    var width = 300
 //    var height = 300
 //

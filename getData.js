@@ -209,6 +209,11 @@ function formatCensusIds(json){
 //    var tableName = "B01002"
 }
 
+
+function tempGetData(){
+    
+}
+
 //https://api.censusreporter.org/1.0/data/show/latest?table_ids=B01001&geo_ids=16000US5367000
 
 function getCensusData(geoid,tractId,county,tableCode,json){
@@ -223,7 +228,7 @@ function getCensusData(geoid,tractId,county,tableCode,json){
             $.getJSON( censusReporter, function( countyData ) {
                 allData["county"]=countyData
                 returnedData = allData
-                formatCensusData(countyData)                
+                formatCensusData(countyData) 
             });    
         });
     });

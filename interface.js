@@ -10,11 +10,11 @@
   d3.select("#main").append("div").attr("class","section col-lg-4 col-md-4").attr("id","paragraph").html("paragraph")
   d3.select("#main").append("div").attr("class","section col-lg-4 col-md-4").attr("id","map").attr("width",window.innerWidth-20)//.html("MAP")
   d3.select("#main").append("div").attr("class","section col-lg-4 col-md-4").attr("id","key")//.html("MAP")
+  d3.select("#main").append("div").attr("class","radar  col-lg-4 col-md-4").attr("id","charts")//.html("charts")
 
   d3.select("#main").append("div").attr("class","col-lg-4 col-md-4 col-sm-12").attr("id","barCharts").attr("width",window.innerWidth-20)
 //.html("charts")
 
-//  d3.select("#main").append("div").attr("class","section charts col-sm-3").attr("id","charts")//.html("charts")
 
 
  // d3.select("#main").append("div").attr("class","section").attr("id","compass")

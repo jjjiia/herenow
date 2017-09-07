@@ -35,13 +35,13 @@ function RadarChart(id, tableCode) {
     
     var data = formatDataRadar(tableCode)
     var color = d3.scale.ordinal()
-    	.range(["#888","#555","red"]);
+    	.range([geoColors["blockGroup"],geoColors["tract"],geoColors["county"]]);
     var options = {
-      w:  window.innerWidth-200,
-      h:  window.innerWidth-200,
-      margin: {top: 100, right: 100, bottom: 100, left: 100},
+      w:  window.innerWidth/2,
+      h:  window.innerWidth/2,
+      margin: {top: 100, right: 120, bottom: 100, left: 120},
       maxValue: 0.5,
-      levels: 5,
+      levels: 6,
       roundStrokes: true,
       color: color
     };
@@ -57,7 +57,7 @@ function RadarChart(id, tableCode) {
 	 opacityArea: 0.1, 	//The opacity of the area of the blob
 	 dotRadius: 4, 			//The size of the colored circles of each blog
 	 opacityCircles: 0, 	//The opacity of the circles of each blob
-	 strokeWidth: 1, 		//The width of the stroke around each blob
+	 strokeWidth: 3, 		//The width of the stroke around each blob
 	 roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
 	 color: d3.scale.category10()	//Color function
 	};

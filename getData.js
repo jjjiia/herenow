@@ -287,11 +287,9 @@ function formatCensusData(data){
     //returnedData = data
 	
 //Call function to draw the Radar chart
-  //  RadarChart(".charts", "B02001");
- //   RadarChart(".charts", "B08301");
-//RadarChart(".charts", formatDataRadar("B08301"), radarChartOptions);
-//RadarChart(".charts", formatDataRadar("B08303"), radarChartOptions);
-//RadarChart(".charts", formatDataRadar("B15003"), radarChartOptions);
+    RadarChart(".radar", "B02001");
+//    RadarChart(".radar", "B08301");
+
 
    displayDataText(returnedData)
     makeParagraph()

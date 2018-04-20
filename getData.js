@@ -29,7 +29,12 @@ function usePosition(position) {
     var latLng = formatLocation(position)
     var lat = latLng[0]
     var lng = latLng[1]
-    var fccUrl = "https://data.fcc.gov/api/block/2010/find?format=jsonp&latitude="+lat+"&longitude="+lng       
+    console.log(fccUrl)
+    //"https://geo.fcc.gov/api/census/block/find?latitude=38.16&longitude=-77.5&showall=true&format=jsonp"
+   
+    var fccUrl = "https://geo.fcc.gov/api/census/block/find?latitude="+lat+"&longitude="+lng+"&showall=true&format=jsonp"
+    console.log(fccUrl)
+    //var fccUrl = "https://data.fcc.gov/api/census//block/find?format=jsonp&latitude="+lat+"&longitude="+lng       
     getCensusId(fccUrl,"jsonp","formatCensusIds")
     
 //var censusUrl =" https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=4600+Silver+Hill+Rd%2C+Suitland%2C+MD+20746&benchmark=9&format=jsonp"
